@@ -29,10 +29,27 @@ Resume Tracker is a full-stack web app to help users keep track of job applicati
 
 - app/
   - __init__.py: App factory, extension initialization, blueprint registration
-  - models.py: SQLAlchemy models (User, etc.)
+  - models.py: SQLAlchemy models (User, JobApplication, etc.)
   - routes.py: Blueprints for authentication and other endpoints
+  - jobs.py: Blueprint for job application CRUD endpoints (GET, POST, PUT, DELETE)
 - config.py: Configuration for Flask, database, and secrets
 - run.py: Entrypoint to run the Flask app
 - requirements.txt: Python dependencies
 - context.md: Project context and documentation
+
+## 🗃️ Models
+
+- **User**: Stores user credentials and info
+- **JobApplication**: Stores job application details (company, position, resume_used, date_applied, status, user_id)
+
+## 🔌 API Endpoints
+
+- **Auth**
+  - POST `/register`: Register a new user
+  - POST `/login`: Login a user
+- **Jobs** (all require authentication)
+  - GET `/api/jobs/`: Fetch all jobs for the current user
+  - POST `/api/jobs/`: Create a new job for the current user
+  - PUT `/api/jobs/<id>`: Update a specific job
+  - DELETE `/api/jobs/<id>`: Delete a job
 

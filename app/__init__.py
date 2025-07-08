@@ -19,6 +19,8 @@ def create_app():
 
     from . import models  # Ensure models are registered
     from .routes import auth_bp
+    from .jobs import jobs_bp
     app.register_blueprint(auth_bp)
+    app.register_blueprint(jobs_bp, url_prefix='/api/jobs')
 
     return app 
