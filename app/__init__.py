@@ -16,7 +16,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     # Enable CORS for frontend with credentials support
-    CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
     from . import models  # Ensure models are registered
     from .routes import auth_bp

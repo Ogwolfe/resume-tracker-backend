@@ -44,8 +44,18 @@ def login():
     try:
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
-            login_user(user)
+            login_user(user, remember=True)
             return jsonify({'message': 'Logged in successfully'})
         return jsonify({'error': 'Invalid credentials'}), 401
     except Exception as e:
-        return jsonify({'error': 'Login failed', 'details': str(e)}), 500 
+        return jsonify({'error': 'Login failed', 'details': str(e)}), 500
+
+@auth_bp.route('/api/me', methods=['GET'])
+@login_required
+def get_current_user():
+    user = current_user
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email
+    }) 
