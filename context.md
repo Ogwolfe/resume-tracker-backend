@@ -47,9 +47,20 @@ Resume Tracker is a full-stack web app to help users keep track of job applicati
 - **Auth**
   - POST `/register`: Register a new user
   - POST `/login`: Login a user
+  - POST `/logout`: Logout the current user
 - **Jobs** (all require authentication)
   - GET `/api/jobs/`: Fetch all jobs for the current user
   - POST `/api/jobs/`: Create a new job for the current user
   - PUT `/api/jobs/<id>`: Update a specific job
   - DELETE `/api/jobs/<id>`: Delete a job
+
+## ⚠️ Error Handling
+
+- All database operations are wrapped in try/except blocks for robust error handling.
+- Custom error handlers are registered for:
+  - 400 Bad Request
+  - 401 Unauthorized
+  - 404 Not Found
+  - 500 Internal Server Error
+  Each returns a JSON error message and the appropriate status code.
 

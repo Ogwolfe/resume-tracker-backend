@@ -23,4 +23,21 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(jobs_bp, url_prefix='/api/jobs')
 
+    # Custom error handlers
+    @app.errorhandler(400)
+    def bad_request(e):
+        return {'error': 'Bad Request'}, 400
+
+    @app.errorhandler(401)
+    def unauthorized(e):
+        return {'error': 'Unauthorized'}, 401
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return {'error': 'Not Found'}, 404
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        return {'error': 'Internal Server Error'}, 500
+
     return app 
