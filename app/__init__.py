@@ -24,7 +24,11 @@ def create_app():
 
     # Set CORS origin dynamically from env
     frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://resume-tracker-frontend.onrender.com")
+    from .routes import auth_bp
+    from .jobs import jobs_bp
     CORS(app, supports_credentials=True, origins=[frontend_origin])
+    CORS(auth_bp, supports_credentials=True, origins=[frontend_origin])
+    CORS(jobs_bp, supports_credentials=True, origins=[frontend_origin])
 
     # Register blueprints
     from . import models  # Ensure models are registered
