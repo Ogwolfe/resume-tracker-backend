@@ -11,6 +11,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @auth_bp.route('/logout', methods=['POST'])
+@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def logout():
     logout_user()
