@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
 from . import db, login_manager
 from flask_login import login_user, logout_user, login_required, current_user
-
+from flask_cors import cross_origin
 auth_bp = Blueprint('auth', __name__)
 
 @login_manager.user_loader
@@ -17,6 +17,7 @@ def logout():
     return jsonify({'message': 'Logged out successfully'})
 
 @auth_bp.route('/register', methods=['POST'])
+@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 def register():
     data = request.get_json()
     username = data.get('username')
@@ -37,6 +38,7 @@ def register():
         return jsonify({'error': 'Registration failed', 'details': str(e)}), 500
 
 @auth_bp.route('/login', methods=['POST'])
+@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -51,6 +53,7 @@ def login():
         return jsonify({'error': 'Login failed', 'details': str(e)}), 500
 
 @auth_bp.route('/api/me', methods=['GET'])
+@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def get_current_user():
     user = current_user
