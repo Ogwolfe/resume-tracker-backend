@@ -23,7 +23,7 @@ def create_app():
     login_manager.init_app(app)
 
     # Set CORS origin dynamically from env
-    frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://resume-tracker-frontend.onrender.com/")
+    frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://resume-tracker-frontend.onrender.com")
     CORS(app, supports_credentials=True, origins=[frontend_origin])
 
     # Register blueprints
