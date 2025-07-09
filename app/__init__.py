@@ -12,29 +12,28 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
-    # Load environment-specific config
+    # Load config
     if os.getenv("FLASK_ENV") == "production":
         app.config.from_object(ProductionConfig)
     else:
         app.config.from_object(DevelopmentConfig)
 
-    # Initialize extensions
+    # Init extensions
     db.init_app(app)
     login_manager.init_app(app)
 
-    # Set CORS origin dynamically from env
+    # Correct origin string (no trailing slash)
     frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://resume-tracker-frontend.onrender.com")
-    CORS(app, resources={r"/*": {"origins": frontend_origin}}, supports_credentials=True)
-    from .routes import auth_bp
-    from .jobs import jobs_bp
-    CORS(app, supports_credentials=True, origins=[frontend_origin])
-    CORS(auth_bp, supports_credentials=True, origins=[frontend_origin])
-    CORS(jobs_bp, supports_credentials=True, origins=[frontend_origin])
 
-    # Register blueprints
-    from . import models  # Ensure models are registered
+    # Apply CORS to entire app
+    CORS(app, resources={r"/*": {"origins": frontend_origin}}, supports_credentials=True)
+
+    # Import models and blueprints
+    from . import models
     from .routes import auth_bp
     from .jobs import jobs_bp
+
+    # Register blueprints (CORS will apply globally via app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(jobs_bp, url_prefix='/api/jobs')
 
@@ -56,3 +55,4 @@ def create_app():
         return {'error': 'Internal Server Error'}, 500
 
     return app
+
