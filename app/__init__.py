@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_cors import CORS
-from config import DevelopmentConfig, ProductionConfig
+from config import DevelopmentConfig, ProductionConfig, TestingConfig
 import os
 
 # Initialize extensions
@@ -12,18 +12,27 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
-    # Load config
-    if os.getenv("FLASK_ENV") == "production":
+    # Load configuration based on environment
+    # Use FLASK_DEBUG for modern Flask versions (FLASK_ENV is deprecated)
+    flask_debug = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
+    flask_env = os.getenv("FLASK_ENV", "development").lower()
+    
+    if flask_env == "production" or (not flask_debug and flask_env != "development"):
         app.config.from_object(ProductionConfig)
+        print("Running in PRODUCTION mode")
+    elif flask_env == "testing":
+        app.config.from_object(TestingConfig)
+        print("Running in TESTING mode")
     else:
         app.config.from_object(DevelopmentConfig)
+        print("Running in DEVELOPMENT mode")
 
     # Init extensions
     db.init_app(app)
     login_manager.init_app(app)
 
-    # Correct origin string (no trailing slash)
-    frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://resume-tracker-frontend.onrender.com")
+    # Get frontend origin from config
+    frontend_origin = app.config.get("FRONTEND_ORIGIN", "http://localhost:5173")
 
     # Apply CORS to entire app
     CORS(app, resources={r"/*": {"origins": frontend_origin}}, supports_credentials=True)

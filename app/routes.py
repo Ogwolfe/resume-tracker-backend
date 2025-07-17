@@ -11,14 +11,12 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @auth_bp.route('/logout', methods=['POST'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def logout():
     logout_user()
     return jsonify({'message': 'Logged out successfully'})
 
 @auth_bp.route('/register', methods=['POST'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 def register():
     data = request.get_json()
     username = data.get('username')
@@ -39,7 +37,6 @@ def register():
         return jsonify({'error': 'Registration failed', 'details': str(e)}), 500
 
 @auth_bp.route('/login', methods=['POST'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -54,7 +51,6 @@ def login():
         return jsonify({'error': 'Login failed', 'details': str(e)}), 500
 
 @auth_bp.route('/api/me', methods=['GET'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def get_current_user():
     user = current_user

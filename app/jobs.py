@@ -6,7 +6,6 @@ from flask_cors import cross_origin
 jobs_bp = Blueprint('jobs', __name__)
 
 @jobs_bp.route('/', methods=['GET'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def get_jobs():
     try:
@@ -23,7 +22,6 @@ def get_jobs():
         return jsonify({'error': 'Failed to fetch jobs', 'details': str(e)}), 500
 
 @jobs_bp.route('/', methods=['POST'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def create_job():
     data = request.get_json()
@@ -46,7 +44,6 @@ def create_job():
         return jsonify({'error': 'Failed to create job', 'details': str(e)}), 500
 
 @jobs_bp.route('/<int:id>', methods=['PUT'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def update_job(id):
     try:
@@ -67,7 +64,6 @@ def update_job(id):
         return jsonify({'error': 'Failed to update job', 'details': str(e)}), 500
 
 @jobs_bp.route('/<int:id>', methods=['DELETE'])
-@cross_origin(origins="https://resume-tracker-frontend.onrender.com", supports_credentials=True)
 @login_required
 def delete_job(id):
     try:
