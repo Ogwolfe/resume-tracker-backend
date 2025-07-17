@@ -32,7 +32,7 @@ def create_app():
     login_manager.init_app(app)
 
     # Get frontend origin from config
-    frontend_origin = app.config.get("FRONTEND_ORIGIN", "http://localhost:5173")
+    frontend_origin = app.config.get("FRONTEND_ORIGIN")
 
     # Apply CORS to entire app
     CORS(app, resources={r"/*": {"origins": frontend_origin}}, supports_credentials=True)
