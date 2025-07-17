@@ -174,3 +174,49 @@ def test_jobs_delete_not_found(logged_in_client):
     resp = logged_in_client.delete("/api/jobs/999")
     assert resp.status_code == 404
     assert "error" in resp.get_json()
+
+def test_cors_headers(client):
+    # Allowed origin (should echo the origin)
+    resp = client.options(
+        "/api/jobs/",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "POST"
+        }
+    )
+    assert resp.status_code == 200
+    assert resp.headers.get("Access-Control-Allow-Origin") == "http://localhost:5173"
+    assert resp.headers.get("Access-Control-Allow-Credentials") == "true"
+
+def test_cors_blocks_disallowed_origin():
+    # Create a new app with a specific allowed origin
+    from app import create_app, db
+    from config import TestingConfig
+
+    class CustomConfig(TestingConfig):
+        FRONTEND_ORIGIN = "http://allowed-origin.com"
+
+    app = create_app(CustomConfig)
+    with app.app_context():
+        db.create_all()
+        test_client = app.test_client()
+        # Allowed origin
+        resp = test_client.options(
+            "/api/jobs/",
+            headers={
+                "Origin": "http://allowed-origin.com",
+                "Access-Control-Request-Method": "POST"
+            }
+        )
+        assert resp.status_code == 200
+        assert resp.headers.get("Access-Control-Allow-Origin") == "http://allowed-origin.com"
+        # Disallowed origin
+        resp = test_client.options(
+            "/api/jobs/",
+            headers={
+                "Origin": "http://disallowed.com",
+                "Access-Control-Request-Method": "POST"
+            }
+        )
+        # Should not include CORS headers for disallowed origin
+        assert resp.headers.get("Access-Control-Allow-Origin") is None
