@@ -9,33 +9,38 @@ import os
 login_manager = LoginManager()
 db = SQLAlchemy()
 
-def create_app():
+def create_app(config_class=None):
     app = Flask(__name__)
 
-    # Load configuration based on environment
-    # Use FLASK_DEBUG for modern Flask versions (FLASK_ENV is deprecated)
-    flask_debug = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
-    flask_env = os.getenv("FLASK_ENV", "development").lower()
-    
-    if flask_env == "production" or (not flask_debug and flask_env != "development"):
-        app.config.from_object(ProductionConfig)
-        print("Running in PRODUCTION mode")
-    elif flask_env == "testing":
-        app.config.from_object(TestingConfig)
-        print("Running in TESTING mode")
+    if config_class is not None:
+        app.config.from_object(config_class)
+        print(f"Running with custom config: {config_class.__name__}")
     else:
-        app.config.from_object(DevelopmentConfig)
-        print("Running in DEVELOPMENT mode")
+        # Load configuration based on environment
+        # Use FLASK_DEBUG for modern Flask versions (FLASK_ENV is deprecated)
+        flask_debug = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
+        flask_env = os.getenv("FLASK_ENV", "development").lower()
+        
+        if flask_env == "production" or (not flask_debug and flask_env != "development"):
+            app.config.from_object(ProductionConfig)
+            print("Running in PRODUCTION mode")
+        elif flask_env == "testing":
+            app.config.from_object(TestingConfig)
+            print("Running in TESTING mode")
+        else:
+            app.config.from_object(DevelopmentConfig)
+            print("Running in DEVELOPMENT mode")
 
     # Init extensions
     db.init_app(app)
     login_manager.init_app(app)
+    login_manager.login_view = None  # disables redirect to login page
+
 
     # Get frontend origin from config
-    frontend_origin = app.config.get("FRONTEND_ORIGIN")
-
-    # Apply CORS to entire app
+    frontend_origin = app.config.get("FRONTEND_ORIGIN", app.config.get("CORS_ORIGINS", "*"))
     CORS(app, resources={r"/*": {"origins": frontend_origin}}, supports_credentials=True)
+
 
     # Import models and blueprints
     from . import models
@@ -62,6 +67,10 @@ def create_app():
     @app.errorhandler(500)
     def internal_error(e):
         return {'error': 'Internal Server Error'}, 500
+
+    @login_manager.unauthorized_handler
+    def unauthorized_callback():
+        return {'error': 'Unauthorized'}, 401
 
     return app
 

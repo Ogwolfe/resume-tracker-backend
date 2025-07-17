@@ -54,3 +54,4 @@ class TestingConfig(Config):
     
     # Testing-specific settings
     WTF_CSRF_ENABLED = False
+    FRONTEND_ORIGIN = "*" 
